@@ -16,6 +16,7 @@ struct ContentView: View {
     @State private var letterGuessed = ""
     @State private var imageFileName = "flower8"
     @State private var playAgainHidden = true
+    @FocusState private var textFieldIsFocused: Bool
     var body: some View {
         VStack {
             HStack {
@@ -47,18 +48,30 @@ struct ContentView: View {
                             RoundedRectangle(cornerRadius: 5)
                                 .stroke(.gray, lineWidth: 2)
                         }
-                    Button("Guess a Letter:") {
+                        .keyboardType(.asciiCapable)
+                        .submitLabel(.done)
+                        .autocorrectionDisabled()
+                        .textInputAutocapitalization(.characters)
+                        .onChange(of: letterGuessed) {
+                            letterGuessed = letterGuessed.trimmingCharacters(in: .letters.inverted)
+                            guard let lastChar = letterGuessed.last else { return }
+                            letterGuessed = String(lastChar).uppercased()
+                        }
+                        .focused($textFieldIsFocused)
+                    Button("Guess a Letter") {
                         //TODO:  Button guess here
-                        playAgainHidden = false
+ //                       playAgainHidden = false
+                        textFieldIsFocused = false
                     }
                     .buttonStyle(.bordered)
                     .tint(.mint)
+                    .disabled(letterGuessed.isEmpty)
                 }
             } else {
                 Button("Another Word")
                 {
                     //TODO: Another Wrod Button Action Here
-                    playAgainHidden=true
+ //                   playAgainHidden=true
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.mint)
